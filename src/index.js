@@ -1,10 +1,28 @@
+import axios from 'axios';
+import NewsApiService from './news-api-service';
 
-// key - твой уникальный ключ доступа к API.
-// q - термин для поиска. То, что будет вводить пользователь.
-// image_type - тип изображения. Мы хотим только фотографии, поэтому задай значение photo.
-// orientation - ориентация фотографии. Задай значение horizontal.
-// safesearch - фильтр по возрасту. Задай значение true.
+const refs = {
+    searchForm: document.querySelector('.search-form'),
+    loadMoreBtn: document.querySelector('.load-more'),
+}
+const newsApiService = new NewsApiService();
 
-fetch('https://pixabay.com/api/?key=38261227-21424640981700fd9c4931e5f&image_type=photo&orientation=horizontal&safesearch=true')
-.then(response =>response.json())
-.then(console.log);
+refs.searchForm.addEventListener('submit', onSearch);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
+
+let searchQuery = '';
+
+function onSearch (e) {
+    e.preventDefault();
+    const searchQuery = e.currentTarget.elements.searchQuery.value;
+    
+    const url =`https://pixabay.com/api/?q=${searchQuery}&key=38261227-21424640981700fd9c4931e5f&image_type=photo&orientation=horizontal&safesearch=true`;
+    
+    fetch(url)
+    .then(response =>response.json())
+    .then(console.log);
+}
+
+function onLoadMore(e) {
+   
+}
