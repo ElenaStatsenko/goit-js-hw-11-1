@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Notiflix from 'notiflix';
 import NewsApiService from './news-api-service';
 
 const refs = {
@@ -11,16 +12,22 @@ const newsApiService = new NewsApiService();
 refs.searchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 
-let searchQuery = '';
-
 function onSearch (e) {
     e.preventDefault();
+   
     newsApiService.query = e.currentTarget.elements.searchQuery.value;
+    if(newsApiService.query==='') {
+      return onErorr()
+    } else {
+      Notiflix.Notify.info(`Hooray! We found ${newsApiService.hits} images.`);
+    }
     newsApiService.resetPage();
 
     newsApiService.fetchArticles()
     .then(data => renderArticles(data))
-    .then(appendArticklesMarkup);
+    .then(data => {
+       articlesContainer();
+      appendArticklesMarkup(data)});
 }
 
 function onLoadMore(e) {
@@ -29,15 +36,8 @@ function onLoadMore(e) {
     .then(appendArticklesMarkup);  
 }
 
-
-// / webformatURL - ссылка на маленькое изображение для списка карточек.
-// largeImageURL - ссылка на большое изображение.
-// tags - строка с описанием изображения. Подойдет для атрибута alt.
-// likes - количество лайков.
-// views - количество просмотров.
-// comments - количество комментариев.
-// downloads - количество загрузок.
 let imageHit = '';
+// прописіваем шаблон для разметки
 function renderArticles(hits) {
 
     const imageHit = hits.map(hit => `
@@ -64,11 +64,15 @@ function renderArticles(hits) {
 
       return imageHit;
 }
-
+// рендер разметки
 function appendArticklesMarkup(text) {
     refs.divGallery.innerHTML = text;
     
 }
-// function appendArticlesLoadMore(text) {
-//     refs.divGallery.insertAdjacentHTML('beforeend', )
-// }
+// очищаем контейнер с картинками при новом запросе
+function articlesContainer() {
+  refs.divGallery.innerHTML = '';
+}
+function onErorr() {
+  Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+}
