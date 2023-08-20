@@ -9,6 +9,9 @@ const refs = {
 };
 const newsApiService = new NewsApiService();
 
+// количество заагруженных фотографий 
+let imageLoaderQuantity = 0;
+
 refs.searchForm.addEventListener('submit', onSearch);
 refs.loadMoreBtn.addEventListener('click', onLoadMore);
 refs.loadMoreBtn.style.display = 'none';
@@ -24,7 +27,11 @@ function onSearch(e) {
   // первый запрос на сервер
   newsApiService
     .fetchArticles()
-    .then(data => renderArticles(data))
+    .then(data => {
+      loadQuantity(data);
+      console.log(imageLoaderQuantity);
+      return renderArticles(data);
+    })
     .then(data => {
       // console.log(data.length);
       // console.log(newsApiService.totalHits);
@@ -50,16 +57,17 @@ function onLoadMore(e) {
   newsApiService
     .fetchArticles()
     .then(data => {
-      console.log(data.length);
-      console.log(newsApiService.totalHits);
+      // console.log(data.length);
+      // console.log(newsApiService.totalHits);
 
-      if (data.length === newsApiService.totalHits) {
-        // refs.loadMoreBtn.style.display = 'none';
-        Notiflix.Notify.info(
-          `We're sorry, but you've reached the end of search results.`
-        );
-      }
-
+      // if (data.length === newsApiService.totalHits) {
+      //   // refs.loadMoreBtn.style.display = 'none';
+      //   Notiflix.Notify.info(
+      //     `We're sorry, but you've reached the end of search results.`
+      //   );
+      // }
+      loadQuantity(data);
+      console.log(imageLoaderQuantity);
       return renderArticles(data);
     })
     .then(data => appendArticklesMarkup(data));
@@ -68,8 +76,7 @@ function onLoadMore(e) {
 // прописываем шаблон для разметки
 function renderArticles(hits) {
   const imageHit = hits.map(
-    hit =>
-      `
+    hit => `
      
      <div class="photo-card">
     <img src="${hit.largeImageURL}" alt="${hit.tags}" width=400px loading="lazy" />
@@ -108,6 +115,6 @@ function onErorr() {
 }
 
 // сравниваем кол-во загруженых картинок с  тоталхитс
-function loadQuantity() {
- 
+function loadQuantity(data) {
+  imageLoaderQuantity = imageLoaderQuantity + Number(data.length);
 }
