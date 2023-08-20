@@ -19,7 +19,7 @@ function onSearch (e) {
     if(newsApiService.query==='') {
       return onErorr()
     } else {
-      Notiflix.Notify.info(`Hooray! We found ${newsApiService.hits} images.`);
+      Notiflix.Notify.info(`Hooray! We found ${imageHit.totalHits} images.`);
     }
     newsApiService.resetPage();
 
@@ -37,9 +37,9 @@ function onLoadMore(e) {
 }
 
 let imageHit = '';
+
 // прописіваем шаблон для разметки
 function renderArticles(hits) {
-
     const imageHit = hits.map(hit => `
      
     /* <div class="photo-card">
